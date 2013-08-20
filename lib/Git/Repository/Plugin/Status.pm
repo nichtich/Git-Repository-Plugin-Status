@@ -18,7 +18,7 @@ sub _keywords { return qw(status); }
 our $FORMAT = qr{^([ MARCDU?!])([ MARCDU?!]) ([^\0]+)\0$};
 
 sub status {
-	my ($r,@cmd) = @_;
+    my ($r,@cmd) = @_;
 
     # pick up unsupported status options
     my @badopts = do {
@@ -30,37 +30,35 @@ sub status {
         . 'Use run( status => ... ) to parse the output yourself'
         if @badopts;
 
-	# TODO: -b shows branch and tracking - maybe interesting (?)
+    @cmd = (qw(status -z --porcelain), @cmd);
+    my $cmd = Git::Repository::Command->new($r, @cmd);
 
-	@cmd = (qw(status -z --porcelain), @cmd);
-	my $cmd = Git::Repository::Command->new($r, @cmd);
+    my $fh = $cmd->stdout;
+    local $/ = "\0";
 
-	my $fh = $cmd->stdout;
-	local $/ = "\0";
+    my @files;
 
-	my @files;
+    while(1) {
+        my $line1 = <$fh>;
+        NEXT: last unless defined $line1;
 
-	while(1) {
-		my $line1 = <$fh>;
-		NEXT: last unless defined $line1;
+        croak "error parsing output of `git @cmd`"
+            unless $line1 =~ $FORMAT;
+        my @args = ($1,$2,$3);
 
-		croak "error parsing output of `git @cmd`"
-		    unless $line1 =~ $FORMAT;
-		my @args = ($1,$2,$3);
+        my $line2 = <$fh>;
+        if (defined $line2 && $line2 !~ $FORMAT) { # PATH2
+            chomp $line2;
+            push @files, Git::Repository::Status->new(
+              @args[0..1], $line2, $args[2]);
+        } else {
+            push @files, Git::Repository::Status->new(@args);
+            $line1 = $line2;
+            goto NEXT;
+        }
+    }
 
-		my $line2 = <$fh>;
-		if (defined $line2 && $line2 !~ $FORMAT) { # PATH2
-			chomp $line2;
-			push @files, Git::Repository::Status->new(
-			  @args[0..1], $line2, $args[2]);
-		} else {
-			push @files, Git::Repository::Status->new(@args);
-			$line1 = $line2;
-			goto NEXT;
-		}
-	}
-
-	return @files;
+    return @files;
 }
 
 1;
@@ -68,20 +66,46 @@ sub status {
 =head1 SYNOPSIS
 
     # load the Status plugin
-	use Git::Repository 'Status';
- 
-	# get the status of all files
-	my @status = Git::Repository->status('--ignored');
- 
-	# print all ignored files
-	for (@status) {
-	    say $_->path1 if $_->ignored;
-	}
+    use Git::Repository 'Status';
+
+    # get the status of all files
+    my @status = Git::Repository->status('--ignored');
+
+    # print all ignored files
+    for (@status) {
+        say $_->path1 if $_->ignored;
+    }
 
 =head1 DESCRIPTION
 
 This module adds the C<status> method to L<Git::Repository> to get the status
-of a git working tree in form of L<Git::Repository::Status> objects.
+of a git working tree in form of L<Git::Repository::Status> objects. See
+L<Git::Repository::Status> for how to make use of the status information.
+
+=head1 OPTIONS
+
+The following options to the git status command can be used:
+
+=over 4
+
+=item -u[<mode>] or --untracked-files[=<mode>]
+
+Include untracked files with modes C<no>, C<normal>, or C<all>.
+
+=item --ignored
+
+Include ignored files.
+
+=item --ignore-submodules[=<when>]
+
+Ignore changes to submodules when looking for changes (C<none>, C<untracked>,
+C<dirty> or C<all>).
+
+=back
+
+=head1 SEE ALSO
+
+L<https://www.kernel.org/pub/software/scm/git/docs/git-status.html>
 
 =encoding utf8
 

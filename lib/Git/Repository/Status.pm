@@ -33,16 +33,16 @@ our %MEANINGS = (
           'A '  => 'index and work tree matches',
           'R '  => 'index and work tree matches',
           'C '  => 'index and work tree matches',
-          ' M'   => 'work tree changed since index',
-          'MM'   => 'work tree changed since index',
-          'AM'   => 'work tree changed since index',
-          'RM'   => 'work tree changed since index',
-          'CM'   => 'work tree changed since index',
-          ' D'   => 'deleted in work tree',
-          'MD'   => 'deleted in work tree',
-          'AD'   => 'deleted in work tree',
-          'RD'   => 'deleted in work tree',
-          'CD'   => 'deleted in work tree',
+          ' M'  => 'work tree changed since index',
+          'MM'  => 'work tree changed since index',
+          'AM'  => 'work tree changed since index',
+          'RM'  => 'work tree changed since index',
+          'CM'  => 'work tree changed since index',
+          ' D'  => 'deleted in work tree',
+          'MD'  => 'deleted in work tree',
+          'AD'  => 'deleted in work tree',
+          'RD'  => 'deleted in work tree',
+          'CD'  => 'deleted in work tree',
           'DD'  => 'unmerged, both deleted',
           'AU'  => 'unmerged, added by us',
           'UD'  => 'unmerged, deleted by them',
@@ -57,7 +57,7 @@ our %MEANINGS = (
 sub meaning { return $MEANINGS{$_[0]->status} }
 
 sub unmerged {
-	return $_[0]->status =~ /^(D[DU]|A[UA]|U[DAU])$/
+    return $_[0]->status =~ /^(D[DU]|A[UA]|U[DAU])$/
 }
 
 sub new {
@@ -70,15 +70,15 @@ sub new {
 =head1 SYNOPSIS
 
     # load the Status plugin
-	use Git::Repository 'Status';
- 
-	# get the status of all files
-	my @status = Git::Repository->status('--ignored');
- 
-	# print all ignored files
-	for (@status) {
-	    say $_->path1 if $_->ignored;
-	}
+    use Git::Repository 'Status';
+
+    # get the status of all files
+    my @status = Git::Repository->status('--ignored');
+
+    # print all ignored files
+    for (@status) {
+        say $_->path1 if $_->ignored;
+    }
 
 =head1 DESCRIPTION
 
