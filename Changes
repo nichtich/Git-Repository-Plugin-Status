@@ -1,4 +1,6 @@
 {{$NEXT}}
+    - added 'index_color' and 'work_color' (issue #1)
+    - fixed 'ignored' and 'tracked' (Michael G. Schwern)
     - migrated to Milla
 
 0.02  2013-08-20

@@ -15,9 +15,31 @@ sub path2 { return $_[0]->[3] }
 sub ignored { return $_[0]->[0] eq '!' }
 sub tracked { return $_[0]->[0] ne '?' }
 
+our %INDEX_COLORS = (
+    A   => 'green',
+    M   => 'green',
+    D   => 'green',
+    R   => 'green',
+    C   => 'green', # sure?    
+    U   => 'red',   # sure?
+    ' ' => 'green',
+    '?' => 'red',
+    '!' => 'red',
+);
+
+our %WORK_COLORS = (
+    M   => 'red',
+    D   => 'red',
+    U   => 'red', # sure?
+    ' ' => 'green',
+    '?' => 'red',
+    '!' => 'red',
+);
+
+sub index_color { $INDEX_COLORS{$_[0]->[0]} }
+sub work_color { $WORK_COLORS{$_[0]->[1]} }
+
 our %MEANINGS = (
-          ' M'  => 'not updated',
-          ' D'  => 'not updated',
           'MM'  => 'updated in index',
           'MD'  => 'updated in index',
           'AM'  => 'added to index',
@@ -30,10 +52,10 @@ our %MEANINGS = (
           'C '  => 'copied in index',
           'CM'  => 'copied in index',
           'CD'  => 'copied in index',
-          'M '  => 'index and work tree matches',
-          'A '  => 'index and work tree matches',
-          'R '  => 'index and work tree matches',
-          'C '  => 'index and work tree matches',
+          'M '  => 'modified in index and work tree',
+          'A '  => 'added in index and work tree',
+          'R '  => 'renamed in index and work tree',
+          'C '  => 'copied in index and work tree',
           ' M'  => 'work tree changed since index',
           'MM'  => 'work tree changed since index',
           'AM'  => 'work tree changed since index',
@@ -55,7 +77,9 @@ our %MEANINGS = (
           '!!'  => 'ignored'
 );
 
-sub meaning { return $MEANINGS{$_[0]->status} }
+sub meaning { 
+    return $MEANINGS{$_[0]->status} 
+}
 
 sub unmerged {
     return $_[0]->status =~ /^(D[DU]|A[UA]|U[DAU])$/
@@ -80,9 +104,13 @@ Git::Repository::Status - git repository status information as Perl module
     # get the status of all files
     my @status = Git::Repository->new->status('--ignored');
 
-    # print all tracked files
+    # print all files with status with color
+    use Term::ANSIColor;
     for (@status) {
-        say $_->path1 if $_->tracked;
+        say colored($_->index,$_->index_color) 
+          . colored($_->work, $_->work_color) 
+          . " " . $_->path1 . "\t" 
+          . colored($_->meaning,'yellow');
     }
 
 =head1 DESCRIPTION
@@ -134,6 +162,14 @@ Returns true if the path is being tracked.
 
 Returns the human readable status meaning as listed in the git manual.
 
+=item work_color
+
+Returns a color (either C<red> or C<green>) for display of work status.
+
+=item work_color
+
+Returns a color (either C<red> or C<green>) for display of index status.
+
 =back
 
 =head1 SEE ALSO
@@ -150,6 +186,7 @@ Jakob Voß
 
 This software is copyright (c) 2014 by Jakob Voß.
 
-This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
+This is free software; you can redistribute it and/or modify it under the same
+terms as the Perl 5 programming language system itself.
 
 =cut

@@ -73,7 +73,7 @@ Git::Repository::Plugin::Status - Show the working tree status
     # load the Status plugin
     use Git::Repository 'Status';
 
-    # get the status of all files
+    # get the status of all files, including ignored files
     my @status = Git::Repository->new->status('--ignored');
 
     # print all tracked files
@@ -122,6 +122,7 @@ Jakob Voß
 
 This software is copyright (c) 2014 by Jakob Voß.
 
-This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
+This is free software; you can redistribute it and/or modify it under the same
+terms as the Perl 5 programming language system itself.
 
 =cut
