@@ -12,8 +12,8 @@ sub status { $_[0]->[0] . $_[0]->[1] }
 sub path1 { return $_[0]->[2] }
 sub path2 { return $_[0]->[3] }
 
-sub ignored { return $_[0]->[0] eq '?' }
-sub tracked { return $_[0]->[0] ne '!' }
+sub ignored { return $_[0]->[0] eq '!' }
+sub tracked { return $_[0]->[0] ne '?' }
 
 our %MEANINGS = (
           ' M'  => 'not updated',
