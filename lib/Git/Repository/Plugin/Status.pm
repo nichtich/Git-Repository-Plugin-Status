@@ -1,5 +1,6 @@
 package Git::Repository::Plugin::Status;
-#ABSTRACT: Show the working tree status
+
+our $VERSION = '0.03';
 
 use strict;
 use warnings;
@@ -63,23 +64,27 @@ sub status {
 
 1;
 
+=head1 NAME
+
+Git::Repository::Plugin::Status - Show the working tree status
+
 =head1 SYNOPSIS
 
     # load the Status plugin
     use Git::Repository 'Status';
 
     # get the status of all files
-    my @status = Git::Repository->status('--ignored');
+    my @status = Git::Repository->new->status('--ignored');
 
-    # print all ignored files
+    # print all tracked files
     for (@status) {
-        say $_->path1 if $_->ignored;
+        say $_->path1 if $_->tracked;
     }
 
 =head1 DESCRIPTION
 
-This module adds the C<status> method to L<Git::Repository> to get the status
-of a git working tree in form of L<Git::Repository::Status> objects. See
+This module adds method C<status> to module L<Git::Repository> to get the
+status of a git working tree in form of L<Git::Repository::Status> objects. See
 L<Git::Repository::Status> for how to make use of the status information.
 
 =head1 OPTIONS
@@ -108,5 +113,15 @@ C<dirty> or C<all>).
 L<https://www.kernel.org/pub/software/scm/git/docs/git-status.html>
 
 =encoding utf8
+
+=head1 AUTHOR
+
+Jakob Voß
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Jakob Voß.
+
+This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
 
 =cut

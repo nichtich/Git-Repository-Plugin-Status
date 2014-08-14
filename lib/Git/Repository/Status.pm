@@ -1,9 +1,10 @@
 package Git::Repository::Status;
-#ABSTRACT: Class representing git status data
 
 use strict;
 use warnings;
 use 5.006;
+
+our $VERSION = '0.03';
 
 sub index { return $_[0]->[0] }
 sub work  { return $_[0]->[1] }
@@ -67,17 +68,21 @@ sub new {
 
 1;
 
+=head1 NAME
+
+Git::Repository::Status - git repository status information as Perl module
+
 =head1 SYNOPSIS
 
     # load the Status plugin
     use Git::Repository 'Status';
 
     # get the status of all files
-    my @status = Git::Repository->status('--ignored');
+    my @status = Git::Repository->new->status('--ignored');
 
-    # print all ignored files
+    # print all tracked files
     for (@status) {
-        say $_->path1 if $_->ignored;
+        say $_->path1 if $_->tracked;
     }
 
 =head1 DESCRIPTION
@@ -136,5 +141,15 @@ Returns the human readable status meaning as listed in the git manual.
 L<https://www.kernel.org/pub/software/scm/git/docs/git-status.html>
 
 =encoding utf8
+
+=head1 AUTHOR
+
+Jakob Voß
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Jakob Voß.
+
+This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
 
 =cut
